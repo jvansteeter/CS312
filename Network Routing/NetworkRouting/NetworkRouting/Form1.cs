@@ -170,19 +170,20 @@ namespace NetworkRouting
             int currentPoint;
 
             // Dijkstra's for the Heap Que
-            HeapQue heapQue = new HeapQue(points);
+            // Total Space Complexity O(n)
+            // Total Time Complexity O(nlogn)
+            HeapQue heapQue = new HeapQue(points);                                                          //Space O(n)  Time O(n)
             stopwatch.Start();
-            heapQue.decreaseKey(startNodeIndex, 0);
-            while (!heapQue.isEmpty())
+            heapQue.decreaseKey(startNodeIndex, 0);                                                         //Time O(logn)
+            while (!heapQue.isEmpty())                                                                      //Time O(n)
             {
-                int min = heapQue.deleteMin();
+                int min = heapQue.deleteMin();                                                              //Time O(logn)
                 foreach (int adjNode in adjacencyList[min])
                 {
-                    //graphics.DrawLine(new Pen(Color.Blue, 2), points[min], points[adjNode]);
                     double dist = heapQue.getDistance(min) + distance(points[min], points[adjNode]);
                     if (heapQue.getDistance(adjNode) > dist)
                     {
-                        heapQue.decreaseKey(adjNode, dist);
+                        heapQue.decreaseKey(adjNode, dist);                                                 //Time O(logn)
                         heapQue.setPrev(adjNode, min);
                     }
                 }
@@ -192,7 +193,7 @@ namespace NetworkRouting
             stopwatch.Reset();
             heapTimeBox.Text = (heapTime / 1000).ToString();
             if(heapQue.getDistance(stopNodeIndex) == Double.MaxValue)
-                pathCostBox.Text = "unreachable";
+                pathCostBox.Text = "Unreachable";
             else
                 pathCostBox.Text = heapQue.getDistance(stopNodeIndex).ToString();
 
@@ -200,32 +201,30 @@ namespace NetworkRouting
             currentPoint = stopNodeIndex;
             while (heapQue.getPrev(currentPoint) != -1)
             {
-                //Console.WriteLine("Current Point: " + currentPoint);
-                //Console.WriteLine("Previous Point: " + heapQue.getPrev(currentPoint));
                 graphics.DrawLine(new Pen(Color.Blue, 2), points[currentPoint], points[heapQue.getPrev(currentPoint)]);
                 float newX = (points[currentPoint].X + points[heapQue.getPrev(currentPoint)].X) / 2;
                 float newY = (points[currentPoint].Y + points[heapQue.getPrev(currentPoint)].Y) / 2;
                 graphics.DrawString("" + (int)(heapQue.getDistance(currentPoint) - heapQue.getDistance(heapQue.getPrev(currentPoint))), new Font(this.Font, FontStyle.Regular), new SolidBrush(Color.Black), new PointF(newX, newY));
                 currentPoint = heapQue.getPrev(currentPoint);
             }
-            Console.WriteLine("Done");
 
             // Dijkstra's for the Array Que
+            // Total Space Complexity O(n)
+            // Total Time Complexity O(n^2)
             if (arrayCheckBox.Checked == true)
             {
-                ArrayQue arrayQue = new ArrayQue(points);
+                ArrayQue arrayQue = new ArrayQue(points);                                                   //Space O(n) Time O(n)
                 stopwatch.Start();
-                arrayQue.decreaseKey(startNodeIndex, 0);
-                while (!arrayQue.empty)
+                arrayQue.decreaseKey(startNodeIndex, 0);                                                    //Time O(1)
+                while (!arrayQue.empty)                                                                     //Time O(n)
                 {
-                    int min = arrayQue.deleteMin();
+                    int min = arrayQue.deleteMin();                                                         //Time O(n)
                     foreach (int adjNode in adjacencyList[min])
-                    {
-                        //graphics.DrawLine(new Pen(Color.Blue, 2), points[min], points[adjNode]);
+                    { 
                         double dist = arrayQue.getDistance(min) + distance(points[min], points[adjNode]);
                         if (arrayQue.getDistance(adjNode) > dist)
                         {
-                            arrayQue.decreaseKey(adjNode, dist);
+                            arrayQue.decreaseKey(adjNode, dist);                                            //Time O(1)
                             arrayQue.setPrev(adjNode, min);
                         }
                     }
@@ -237,9 +236,7 @@ namespace NetworkRouting
                 // Draw path for array
                 currentPoint = stopNodeIndex;
                 while (arrayQue.getPrev(currentPoint) != -1)
-                {
-                    //Console.WriteLine("Current Point: " + currentPoint);
-                    //Console.WriteLine("Previous Point: " + arrayQue.getPrev(currentPoint));
+                {       
                     graphics.DrawLine(new Pen(Color.Red, 2), points[currentPoint], points[arrayQue.getPrev(currentPoint)]);
                     float newX = (points[currentPoint].X + points[arrayQue.getPrev(currentPoint)].X) / 2;
                     float newY = (points[currentPoint].Y + points[arrayQue.getPrev(currentPoint)].Y) / 2;
@@ -247,7 +244,6 @@ namespace NetworkRouting
                     currentPoint = arrayQue.getPrev(currentPoint);
                 }
                 differenceBox.Text = (arrayTime / heapTime).ToString();
-                Console.WriteLine("Done");
             }
         }
 
@@ -370,6 +366,9 @@ namespace NetworkRouting
 
         public ArrayQue(List<PointF> points)
         {
+            // Make Que
+            // Space O(n)
+            // Time O(n)
             this.empty = false;
             deleteCount = 0;
             dist = new double[points.Count];
@@ -385,6 +384,8 @@ namespace NetworkRouting
 
         public int deleteMin()
         {
+            // Space O(1)
+            // Time O(n)
             double min = Double.MaxValue;
             int minIndex = -1;
             for(int i = 0; i < dist.Length; i++)
@@ -404,23 +405,31 @@ namespace NetworkRouting
             return minIndex;
         }
 
-        public double getDistance(int index)
-        {
-            return dist[index];
-        }
-
         public void decreaseKey(int index, double value)
         {
+            // Space O(1)
+            // Time O(1)
             dist[index] = value;
         }
 
+        public double getDistance(int index)
+        {
+            // Space O(1)
+            // Time O(1)
+            return dist[index];
+        }       
+
         public int getPrev(int index)
         {
+            // Space O(1)
+            // Time O(1)
             return prev[index];
         }
 
         public void setPrev(int index, int value)
         {
+            // Space O(1)
+            // Time O(1)
             prev[index] = value;
         }
     }
@@ -438,6 +447,9 @@ namespace NetworkRouting
 
         public HeapQue(List<PointF> points)
         {
+            // Make Que
+            // Size O(n)
+            // Time O(n)
             dist = new double[points.Count];
             pointer = new int[points.Count];
             heap = new int[points.Count];
@@ -455,6 +467,8 @@ namespace NetworkRouting
 
         public int deleteMin()
         {
+            // Space O(1)
+            // Time O(logn)
             int minIndex = heap[0];
             pointer[heap[0]] = -1;
             heap[0] = heap[endIndex];
@@ -465,7 +479,6 @@ namespace NetworkRouting
             int currentIndex = 0;
             while(currentIndex < endIndex)
             {
-                //Console.WriteLine("CurrentIndex: " + currentIndex);
                 int child1 = (currentIndex + 1) * 2;
                 int child2 = ((currentIndex + 1) * 2) - 1;
 
@@ -484,9 +497,7 @@ namespace NetworkRouting
                     }
                     break;
                 }
-
-                
-
+     
                 if (dist[heap[currentIndex]] > dist[heap[child1]] || dist[heap[currentIndex]] > dist[heap[child2]])
                 {
                     if (dist[heap[child1]] < dist[heap[child2]])
@@ -516,6 +527,8 @@ namespace NetworkRouting
 
         public void decreaseKey(int index, double value)
         {
+            // Space O(1)
+            // Time O(1)
             int inHeap = pointer[index];
             dist[index] = value;
 
@@ -541,6 +554,8 @@ namespace NetworkRouting
 
         public bool isEmpty()
         {
+            // Space O(1)
+            // Time O(1)
             if(endIndex == -1)
             {
                 return true;
@@ -553,16 +568,22 @@ namespace NetworkRouting
 
         public double getDistance(int index)
         {
+            // Space O(1)
+            // Time O(1)
             return dist[index];
         }
 
         public void setPrev(int index, int value)
         {
+            // Space O(1)
+            // Time O(1)
             prev[index] = value;
         }
 
         public int getPrev(int index)
         {
+            // Space O(1)
+            // Time O(1)
             return prev[index];
         }
     }
